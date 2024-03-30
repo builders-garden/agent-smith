@@ -11,6 +11,7 @@ import {
   Button,
 } from "@nextui-org/react";
 import { Copy } from "lucide-react";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export const Navigation = () => {
@@ -23,7 +24,10 @@ export const Navigation = () => {
 
   useEffect(() => {
     if (signedAccountId) {
-      setAction(() => logOut);
+      setAction(() => {
+        setEthAddress("");
+        logOut && logOut();
+      });
       setLabel(signedAccountId);
     } else {
       setAction(() => logIn);
@@ -48,9 +52,9 @@ export const Navigation = () => {
   return (
     <Navbar isBordered>
       <NavbarBrand>
-        <p className="font-bold text-inherit">
+        <Link href={"/"} className="font-bold text-inherit">
           Agent <span className="text-success">Smith</span>
-        </p>
+        </Link>
       </NavbarBrand>
       <NavbarContent justify="end">
         <NavbarItem>

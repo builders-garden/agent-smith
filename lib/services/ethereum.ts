@@ -120,4 +120,15 @@ export class Ethereum {
     const relayed = await this.web3.eth.sendSignedTransaction(serializedTx);
     return relayed.transactionHash;
   }
+
+  async readContract(
+    contractAddress: string,
+    contractAbi: any,
+    method: string,
+    args: any
+  ) {
+    const contract = new this.web3.eth.Contract(contractAbi, contractAddress);
+
+    return contract.methods[method](...args).call();
+  }
 }

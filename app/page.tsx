@@ -24,11 +24,20 @@ export default function Home() {
 
   const sendTransaction = async () => {
     const { address } = await Eth.deriveAddress(signedAccountId, "agent-smith");
+    const { action, data } = response[0];
+
+    if (action === "swap" || action === "bridge") {
+      // check allowance
+      // const allowance = await Eth.readContract(
+      //   data.
+      // );
+    }
+
     const { transaction, payload } = await Eth.createPayload(
       address,
-      response[0].data.steps[0].to,
-      response[0].data.steps[0].value,
-      response[0].data.steps[0].data
+      data.steps[0].to,
+      data.steps[0].value,
+      data.steps[0].data
     );
     console.log(payload);
     const signature = await Eth.requestSignatureToMPC(
@@ -107,7 +116,9 @@ export default function Home() {
             </h1>
           </CardHeader>
           <CardBody className="border-t-1">
-            <p>{response[0].data.description}</p>
+            <p>
+              {response[0].data.description || response[0].data[0].description}
+            </p>
             <div className="w-full flex flex-row justify-end space-x-4">
               {transactionURL ? (
                 <Button
