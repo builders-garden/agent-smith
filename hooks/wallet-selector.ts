@@ -13,6 +13,8 @@ import { setupMintbaseWallet } from "@near-wallet-selector/mintbase-wallet";
 import { setupSender } from "@near-wallet-selector/sender";
 import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { providers } from "near-api-js";
+import { setupHereWallet } from "@near-wallet-selector/here-wallet";
+import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
 
 type UseWalletStore = {
   signedAccountId: string;
@@ -109,8 +111,8 @@ export function useInitWallet({
           successUrl: "https://agent-smith.builders.garden/success",
           failureUrl: "https://agent-smith.builders.garden/error",
         }),
-        // setupMyNearWallet(),
-        // setupHereWallet(),
+        setupMyNearWallet(),
+        setupHereWallet(),
       ],
     });
 
