@@ -45,6 +45,10 @@ this will start the development server at `http://localhost:3000`.
 - [x] Sign and send transactions using NEAR wallet
 - [x] Support for multiple EVM-compatible chains
 
+## 📚 notes
+
+as of right now, since everything works on NEAR testnet and on Ethereum Sepolia, due to the lack of liquidity or support for operations such as swaps and bridges, I cannot test them with the signature. once this gets rolled out to production, all the logic for supporting such operations is already in place so no further work needs to be done, but it must be stated that the only operation that you can perform right now is transfering tokens.
+
 ### 🛠️ other developments
 
 i've added also `typescript` support to the NEAR hooks and the services provided in the Github example repositories provided. this allowed me to have a better development experience and catch some errors at compile time.
