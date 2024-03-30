@@ -7,11 +7,11 @@ import {
   setupWalletSelector,
 } from "@near-wallet-selector/core";
 import { setupModal } from "@near-wallet-selector/modal-ui";
-import { setupMyNearWallet } from "@near-wallet-selector/my-near-wallet";
-import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 
 import { useEffect, useState } from "react";
 import { setupMintbaseWallet } from "@near-wallet-selector/mintbase-wallet";
+import { setupSender } from "@near-wallet-selector/sender";
+import { setupMeteorWallet } from "@near-wallet-selector/meteor-wallet";
 import { providers } from "near-api-js";
 
 type UseWalletStore = {
@@ -29,6 +29,7 @@ type UseWalletStore = {
     | undefined;
   callMethod:
     | ((args: {
+        accountId: string;
         contractId: string;
         method: string;
         args: string;
@@ -52,6 +53,7 @@ type UseWalletStore = {
       | undefined;
     callMethod:
       | ((args: {
+          accountId: string;
           contractId: string;
           method: string;
           args: string;
@@ -99,13 +101,16 @@ export function useInitWallet({
     const selector = setupWalletSelector({
       network: networkId,
       modules: [
+        setupSender(),
+        setupMeteorWallet(),
+        // setupMeteorWallet(),
         setupMintbaseWallet({
           callbackUrl: "http://localhost:3000/success",
           successUrl: "http://localhost:3000/success",
           failureUrl: "http://localhost:3000/error",
         }),
-        setupMyNearWallet(),
-        setupHereWallet(),
+        // setupMyNearWallet(),
+        // setupHereWallet(),
       ],
     });
 
@@ -177,21 +182,25 @@ export function useInitWallet({
     };
 
     const callMethod = async ({
+      accountId,
       contractId,
       method,
       args = {},
       gas = "30000000000000",
       deposit = "0",
     }: {
+      accountId: string;
       contractId: string;
       method: string;
       args: any;
       gas: string;
       deposit: string;
     }) => {
-      const wallet = await (await selector).wallet();
-
+      const walletSelector = await selector;
+      const wallet = await walletSelector.wallet();
+      console.log(contractId, method, args, gas, deposit);
       const outcome = await wallet.signAndSendTransaction({
+        signerId: accountId,
         receiverId: contractId,
         actions: [
           {
@@ -205,8 +214,8 @@ export function useInitWallet({
           },
         ],
       });
-
-      return providers.getTransactionLastResult(outcome!);
+      console.log(outcome);
+      return outcome;
     };
 
     const getTransactionResult = async (txHash: string) => {

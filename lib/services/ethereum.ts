@@ -59,11 +59,10 @@ export class Ethereum {
       maxFeePerGas,
       maxPriorityFeePerGas,
       to: receiver,
-      value: BigInt(this.web3.utils.toWei(amount, "ether")),
+      value: BigInt(amount),
       chain: this.chainId,
       data,
     };
-
     // Return the message hash
     const transaction = FeeMarketEIP1559Transaction.fromTxData(
       transactionData,
@@ -89,6 +88,7 @@ export class Ethereum {
       args: { payload, path, key_version: 0 },
       gas: "250000000000000",
     });
+    console.log("REQUEST", request);
     const [big_r, big_s] = await wallet.getTransactionResult(
       request.transaction.hash
     );

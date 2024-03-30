@@ -19,15 +19,12 @@ export const Navigation = () => {
   const [action, setAction] = useState<any>(() => {});
   const [label, setLabel] = useState<string>("Connect");
   const [ethAddress, setEthAddress] = useState<string>("");
-  const [derivation, setDerivation] = useState("agent-smith");
+  const [derivation, setDerivation] = useState("");
   const derivationPath = useDebounce(derivation, 1000);
-
+  console.log(signedAccountId);
   useEffect(() => {
     if (signedAccountId) {
-      setAction(() => {
-        setEthAddress("");
-        logOut && logOut();
-      });
+      setAction(() => logOut);
       setLabel(signedAccountId);
     } else {
       setAction(() => logIn);
@@ -59,7 +56,7 @@ export const Navigation = () => {
       <NavbarContent justify="end">
         <NavbarItem>
           <Button color="success" onPress={action} variant="flat">
-            {label}
+            {signedAccountId ? shortenAddress(signedAccountId) : label}
           </Button>
         </NavbarItem>
         {ethAddress && (

@@ -23,7 +23,7 @@ export default function Home() {
   const [transactionURL, setTransactionURL] = useState<string>("");
 
   const sendTransaction = async () => {
-    const { address } = await Eth.deriveAddress(signedAccountId, "agent-smith");
+    const { address } = await Eth.deriveAddress(signedAccountId, "");
     const { action, data } = response[0];
 
     if (action === "swap" || action === "bridge") {
@@ -43,7 +43,7 @@ export default function Home() {
     const signature = await Eth.requestSignatureToMPC(
       { viewMethod, callMethod, getTransactionResult },
       "multichain-testnet-2.testnet",
-      "agent-smith",
+      "",
       payload,
       transaction,
       address
@@ -58,10 +58,7 @@ export default function Home() {
     setResponse(null);
     setTransactionURL("");
     try {
-      const { address } = await Eth.deriveAddress(
-        signedAccountId,
-        "agent-smith"
-      );
+      const { address } = await Eth.deriveAddress(signedAccountId, "");
       const res = await fetch("/api/brian", {
         method: "POST",
         body: JSON.stringify({ prompt, address: address }),
