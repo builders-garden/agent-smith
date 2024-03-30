@@ -91,7 +91,7 @@ export default function Home() {
         <Input
           value={prompt}
           onValueChange={(val) => setPrompt(val)}
-          placeholder="Swap 0.1 ETH to USDC"
+          placeholder="Transfer 1 ETH to 0x1234..."
         />
         <Button
           color="primary"

@@ -105,7 +105,6 @@ export function useInitWallet({
       modules: [
         setupSender(),
         setupMeteorWallet(),
-        // setupMeteorWallet(),
         setupMintbaseWallet({
           callbackUrl: "https://agent-smith.builders.garden/success",
           successUrl: "https://agent-smith.builders.garden/success",
