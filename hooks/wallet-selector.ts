@@ -12,6 +12,7 @@ import { setupHereWallet } from "@near-wallet-selector/here-wallet";
 
 import { useEffect, useState } from "react";
 import { setupMintbaseWallet } from "@near-wallet-selector/mintbase-wallet";
+import { providers } from "near-api-js";
 
 type UseWalletStore = {
   signedAccountId: string;
@@ -19,11 +20,47 @@ type UseWalletStore = {
   setStoreSelector: (args: { selector: Promise<WalletSelector> }) => void;
   logOut: (() => Promise<void>) | undefined;
   logIn: (() => Promise<void>) | undefined;
+  viewMethod:
+    | ((args: {
+        contractId: string;
+        method: string;
+        args: any;
+      }) => Promise<any>)
+    | undefined;
+  callMethod:
+    | ((args: {
+        contractId: string;
+        method: string;
+        args: string;
+        gas: string;
+        deposit: string;
+      }) => Promise<any>)
+    | undefined;
+  getTransactionResult: ((hash: string) => Promise<any>) | undefined;
   setLogActions: (args: {
     logOut: (() => Promise<void>) | undefined;
     logIn: (() => Promise<void>) | undefined;
   }) => void;
   setAuth: (args: { signedAccountId: string }) => void;
+  setMethods: (args: {
+    viewMethod:
+      | ((args: {
+          contractId: string;
+          method: string;
+          args: any;
+        }) => Promise<any>)
+      | undefined;
+    callMethod:
+      | ((args: {
+          contractId: string;
+          method: string;
+          args: string;
+          gas: string;
+          deposit: string;
+        }) => Promise<any>)
+      | undefined;
+    getTransactionResult: ((hash: string) => Promise<any>) | undefined;
+  }) => void;
 };
 
 export const useWallet = createStore<UseWalletStore>((set) => ({
@@ -31,9 +68,14 @@ export const useWallet = createStore<UseWalletStore>((set) => ({
   logOut: undefined,
   logIn: undefined,
   selector: undefined,
+  viewMethod: undefined,
+  callMethod: undefined,
+  getTransactionResult: undefined,
   setLogActions: ({ logOut, logIn }) => set({ logOut, logIn }),
   setAuth: ({ signedAccountId }) => set({ signedAccountId }),
   setStoreSelector: ({ selector }) => set({ selector }),
+  setMethods: ({ viewMethod, callMethod, getTransactionResult }) =>
+    set({ viewMethod, callMethod, getTransactionResult }),
 }));
 
 type UseInitWalletProps = {
@@ -48,6 +90,7 @@ export function useInitWallet({
   const setAuth = useWallet((store) => store.setAuth);
   const setLogActions = useWallet((store) => store.setLogActions);
   const setStoreSelector = useWallet((store) => store.setStoreSelector);
+  const setMethods = useWallet((store) => store.setMethods);
   const [selector, setSelector] = useState<Promise<WalletSelector> | undefined>(
     undefined
   );
@@ -55,7 +98,15 @@ export function useInitWallet({
   useEffect(() => {
     const selector = setupWalletSelector({
       network: networkId,
-      modules: [setupMintbaseWallet(), setupMyNearWallet(), setupHereWallet()],
+      modules: [
+        setupMintbaseWallet({
+          callbackUrl: "http://localhost:3000/success",
+          successUrl: "http://localhost:3000/success",
+          failureUrl: "http://localhost:3000/error",
+        }),
+        setupMyNearWallet(),
+        setupHereWallet(),
+      ],
     });
 
     setSelector(selector);
@@ -102,5 +153,72 @@ export function useInitWallet({
     };
 
     setLogActions({ logOut, logIn });
-  }, [createAccessKeyFor, selector, setAuth, setLogActions]);
+
+    const viewMethod = async ({
+      contractId,
+      method,
+      args = {},
+    }: {
+      contractId: string;
+      method: string;
+      args: any;
+    }) => {
+      const { network } = (await selector).options;
+      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+
+      let res = (await provider.query({
+        request_type: "call_function",
+        account_id: contractId,
+        method_name: method,
+        args_base64: Buffer.from(JSON.stringify(args)).toString("base64"),
+        finality: "optimistic",
+      })) as any;
+      return JSON.parse(Buffer.from(res.result).toString());
+    };
+
+    const callMethod = async ({
+      contractId,
+      method,
+      args = {},
+      gas = "30000000000000",
+      deposit = "0",
+    }: {
+      contractId: string;
+      method: string;
+      args: any;
+      gas: string;
+      deposit: string;
+    }) => {
+      const wallet = await (await selector).wallet();
+
+      const outcome = await wallet.signAndSendTransaction({
+        receiverId: contractId,
+        actions: [
+          {
+            type: "FunctionCall",
+            params: {
+              methodName: method,
+              args,
+              gas,
+              deposit,
+            },
+          },
+        ],
+      });
+
+      return providers.getTransactionLastResult(outcome!);
+    };
+
+    const getTransactionResult = async (txHash: string) => {
+      const walletSelector = await selector;
+      const { network } = walletSelector.options;
+      const provider = new providers.JsonRpcProvider({ url: network.nodeUrl });
+
+      // Retrieve transaction result from the network
+      const transaction = await provider.txStatus(txHash, "unnused");
+      return providers.getTransactionLastResult(transaction);
+    };
+
+    setMethods({ viewMethod, callMethod, getTransactionResult });
+  }, [createAccessKeyFor, selector, setAuth, setLogActions, setMethods]);
 }

@@ -1,6 +1,8 @@
 "use client";
-
+import { useDebounce } from "@/hooks/use-debounce";
 import { useWallet } from "@/hooks/wallet-selector";
+import { Eth } from "@/lib/services";
+import { shortenAddress } from "@/lib/utils";
 import {
   Navbar,
   NavbarBrand,
@@ -8,12 +10,16 @@ import {
   NavbarItem,
   Button,
 } from "@nextui-org/react";
+import { Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 
 export const Navigation = () => {
   const { signedAccountId, logOut, logIn } = useWallet();
   const [action, setAction] = useState<any>(() => {});
   const [label, setLabel] = useState<string>("Connect");
+  const [ethAddress, setEthAddress] = useState<string>("");
+  const [derivation, setDerivation] = useState("agent-smith");
+  const derivationPath = useDebounce(derivation, 1000);
 
   useEffect(() => {
     if (signedAccountId) {
@@ -24,6 +30,20 @@ export const Navigation = () => {
       setLabel("Connect");
     }
   }, [signedAccountId, setAction, logIn, logOut]);
+
+  useEffect(() => {
+    if (signedAccountId) {
+      retrieveEthereumAddress();
+    }
+  }, [signedAccountId]);
+
+  const retrieveEthereumAddress = async () => {
+    const { address } = await Eth.deriveAddress(
+      signedAccountId,
+      derivationPath
+    );
+    setEthAddress(address);
+  };
 
   return (
     <Navbar isBordered>
@@ -38,6 +58,21 @@ export const Navigation = () => {
             {label}
           </Button>
         </NavbarItem>
+        {ethAddress && (
+          <NavbarItem>
+            <Button
+              color="primary"
+              onPress={() => {
+                // copy to clipboard
+                typeof navigator !== undefined &&
+                  navigator.clipboard.writeText(ethAddress);
+              }}
+              startContent={<Copy size={12} />}
+            >
+              {shortenAddress(ethAddress)}
+            </Button>
+          </NavbarItem>
+        )}
       </NavbarContent>
     </Navbar>
   );

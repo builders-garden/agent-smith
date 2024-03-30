@@ -17,10 +17,23 @@ being able to speed up the process of generating and signing transactions for mu
 
 ## 🚀 getting started
 
-after you've cloned this repository, you can run the following commands:
+after you've cloned this repository, you can run the following command to install the dependencies:
 
 ```bash
 yarn install
+```
+
+then you need to set the `.env` file and populate it with the correct values:
+
+```bash
+cp .env.example .env
+```
+
+in order to get a valid `BRIAN_API_KEY` you can enter in the [Brian App](https://brianknows.org/app) and retrieve it from the settings page. You can check more info the the [Brian Docs](https://docs.brianknows.org).
+
+when you're done, you can run the following command to start the development server:
+
+```bash
 yarn dev
 ```
 
