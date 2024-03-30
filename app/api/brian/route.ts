@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   // get the prompt and address from the JSON request
-  const { prompt, address } = await req.json();
+  const { prompt, address, chainId } = await req.json();
   // instantiate the Brian SDK
   // generate the response
   const brianResponse = await fetch(
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         "Content-Type": "application/json",
         "x-brian-api-key": process.env.BRIAN_API_KEY!,
       },
-      body: JSON.stringify({ prompt, address, chainId: "11155111" }),
+      body: JSON.stringify({ prompt, address, chainId }),
     }
   );
 

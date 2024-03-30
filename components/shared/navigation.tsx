@@ -1,7 +1,7 @@
 "use client";
 import { useDebounce } from "@/hooks/use-debounce";
 import { useWallet } from "@/hooks/wallet-selector";
-import { Eth } from "@/lib/services";
+import { getEthClient } from "@/lib/services";
 import { shortenAddress } from "@/lib/utils";
 import {
   Navbar,
@@ -39,7 +39,7 @@ export const Navigation = () => {
   }, [signedAccountId]);
 
   const retrieveEthereumAddress = async () => {
-    const { address } = await Eth.deriveAddress(
+    const { address } = await getEthClient("1").deriveAddress(
       signedAccountId,
       derivationPath
     );
