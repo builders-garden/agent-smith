@@ -1,10 +1,7 @@
 "use client";
-
 import { Image, Link } from "@nextui-org/react";
-import { useSearchParams } from "next/navigation";
 
 export default function ErrorPage() {
-  const searchParams = useSearchParams();
   return (
     <section className="flex flex-col items-center space-y-4 py-12 h-full">
       <Image
