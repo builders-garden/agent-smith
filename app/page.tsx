@@ -13,8 +13,10 @@ import {
   RadioGroup,
   Radio,
 } from "@nextui-org/react";
-import { Bot, Send } from "lucide-react";
+import { Bot, Info, Send } from "lucide-react";
 import { FormEvent, useState } from "react";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 export default function Home() {
   const { signedAccountId, getTransactionResult, viewMethod, callMethod } =
@@ -24,6 +26,7 @@ export default function Home() {
   const [response, setResponse] = useState<any>(null);
   const [transactionURL, setTransactionURL] = useState<string>("");
   const [value, setValue] = useState("11155111");
+  const [showInfo, setShowInfo] = useState<boolean>(false);
 
   const handleSelectionChange = (e: any) => {
     setValue(e.target.value);
@@ -73,6 +76,7 @@ export default function Home() {
     e.preventDefault();
     setLoading(true);
     setResponse(null);
+    setShowInfo(false);
     setTransactionURL("");
     try {
       const Eth = getEthClient(value);
@@ -134,19 +138,44 @@ export default function Home() {
       </form>
       {response && (
         <Card className="w-full max-w-md">
-          <CardHeader className="flex flex-row space-x-2">
-            <div className="p-2 bg-success rounded-full">
-              <Bot />
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="flex flex-row space-x-2 items-center">
+              <div className="p-2 bg-success rounded-full">
+                <Bot />
+              </div>
+              <h1 className="font-semibold text-lg">
+                {capitalizeFirstLetter(response[0].action)}
+              </h1>
             </div>
-            <h1 className="font-semibold text-lg">
-              {capitalizeFirstLetter(response[0].action)}
-            </h1>
+            <Button
+              variant="flat"
+              className="font-semibold"
+              onClick={() => setShowInfo(!showInfo)}
+              isIconOnly
+              size="sm"
+            >
+              <Info size={16} />
+            </Button>
           </CardHeader>
           <CardBody className="border-t-1">
             <p>
               {response[0].data.description || response[0].data[0].description}
             </p>
-            <div className="w-full flex flex-row justify-end space-x-4">
+            {showInfo && (
+              <ReactMarkdown
+                // disallowedElements={["a"]}
+                // @ts-ignore
+                rehypePlugins={[rehypeRaw]}
+                className="text-justify text-sm bg-stone-700 overflow-x-scroll p-4 rounded-lg my-4"
+              >
+                {`\`\`\`json\n${JSON.stringify(
+                  response[0].data[0] ? response[0].data[0] : response[0].data,
+                  null,
+                  4
+                )}`}
+              </ReactMarkdown>
+            )}
+            <div className="w-full flex flex-row justify-end space-x-2 mt-2">
               {transactionURL ? (
                 <Button
                   as={Link}
