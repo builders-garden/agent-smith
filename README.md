@@ -19,3 +19,13 @@ yarn dev
 ```
 
 this will start the development server at `http://localhost:3000`.
+
+## 📦 features
+
+- [x] Generate transactions from plain-english prompts
+- [x] Sign and send transactions using NEAR wallet
+- [x] Support for multiple EVM-compatible chains
+
+### 🛠️ other developments
+
+i've added also `typescript` support to the NEAR hooks and the services provided in the Github example repositories provided. this allowed me to have a better development experience and catch some errors at compile time.
