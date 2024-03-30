@@ -1,6 +1,6 @@
 "use client";
 
-import { useWallet } from "@/lib/wallets/wallet-selector";
+import { useWallet } from "@/hooks/wallet-selector";
 import {
   Navbar,
   NavbarBrand,

@@ -1,7 +1,7 @@
 "use client";
 
 import { NetworkId } from "@/lib/config";
-import { useInitWallet } from "@/lib/wallets/wallet-selector";
+import { useInitWallet } from "@/hooks/wallet-selector";
 import { NextUIProvider } from "@nextui-org/react";
 
 export default function Providers({
