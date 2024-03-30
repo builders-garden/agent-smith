@@ -9,6 +9,12 @@ This NextJS app allows users to generate transactions by prompting in plain Engl
 - [NEAR Chain Signatures](https://docs.near.org/abstraction/chain-signatures) - that enable NEAR accounts, including smart contracts, to sign and execute transactions across many blockchain protocols;
 - [Brian](https://docs.brianknows.org) - an web3-first AI API that generates transactions data from plain-english prompts.
 
+## 🎯 why do i think it's cool?
+
+interacting with several different chains at once is a **pain**: you need to have multiple wallets, multiple accounts, you need to switch between different networks every time, and this may cause a problem when interacting with AI agents like **Brian**. in fact, services like **Brian** are not able to sign transactions on their own, so you need to sign them with your wallet, and the transaction data and info are generated when you **send** the request to the AI agent: in the case of **swaps** or **crosschain swaps** this is a issue, for example, when swap rates change between the time you send the request and the time you sign the transaction.
+
+being able to speed up the process of generating and signing transactions for multiple chains at once is a **game changer** for users that want to interact with multiple chains at once.
+
 ## 🚀 getting started
 
 after you've cloned this repository, you can run the following commands:
