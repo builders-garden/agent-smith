@@ -105,9 +105,9 @@ export function useInitWallet({
         setupMeteorWallet(),
         // setupMeteorWallet(),
         setupMintbaseWallet({
-          callbackUrl: "http://localhost:3000/success",
-          successUrl: "http://localhost:3000/success",
-          failureUrl: "http://localhost:3000/error",
+          callbackUrl: "https://agent-smith.builders.garden/success",
+          successUrl: "https://agent-smith.builders.garden/success",
+          failureUrl: "https://agent-smith.builders.garden/error",
         }),
         // setupMyNearWallet(),
         // setupHereWallet(),
